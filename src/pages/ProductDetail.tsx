@@ -1,53 +1,58 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Heart, Share, Plus, Minus } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { getProduct } from "@/services/products";
 import { useCart } from "@/context/CartContext";
-import { useWishlist } from "@/context/WishlistContext";
+import { useProduct } from "@/services/products"; // Adjust as needed
 import type { Product } from "@/types/product";
 import Header from "@/components/Header";
 
 // Define the variant structure based on your data
 interface Variant {
   id: number;
-  variant1: string;
-  variant2: string;
-  variant3: string;
-  price: number;
+  weight: string;
+  unit: string;
 }
 
 interface ExtendedProduct extends Product {
   variants?: Variant[];
-  defaultVariant?: number;
+  media?: {
+    url: string;
+    alt: string;
+  };
+  category?: {
+    name: string;
+    media: {
+      url: string;
+    };
+  };
 }
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState<ExtendedProduct | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedVariants, setSelectedVariants] = useState<number[]>([]);
+  const [variantQuantities, setVariantQuantities] = useState<Record<number, number>>({});
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchProduct = async () => {
       if (id) {
         try {
-          const fetchedProduct = await getProduct(Number(id));
+          // Use the actual API or service to fetch the product
+          const response = await fetch(`https://businessapi.pokargreens.com/api/v1/products/${id}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch product");
+          }
+          const fetchedProduct = await response.json();
           setProduct(fetchedProduct);
-          
+
           // Set default variant when product loads
-          if (fetchedProduct?.defaultVariant) {
-            setSelectedVariant(fetchedProduct.defaultVariant);
-          } else if (fetchedProduct?.variants?.length > 0) {
+          if (fetchedProduct?.variants && fetchedProduct.variants.length > 0) {
             setSelectedVariant(fetchedProduct.variants[0].id);
           }
-          
-          // Set default option
-          setSelectedOption("variant1");
         } catch (error) {
           toast.error("Failed to load product");
         }
@@ -58,245 +63,192 @@ const ProductDetail = () => {
 
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change;
-    if (newQuantity >= 1 && newQuantity <= (product?.stock || 10)) {
+    if (newQuantity >= 1 && newQuantity <= 10) {
       setQuantity(newQuantity);
     }
   };
 
   const getCurrentVariant = () => {
     if (!product?.variants || !selectedVariant) return null;
-    return product.variants.find(v => v.id === selectedVariant);
+    return product.variants.find((v) => v.id === selectedVariant);
   };
 
-  const getCurrentPrice = () => {
-    const variant = getCurrentVariant();
-    return variant?.price || product?.price || 0;
+  const toggleVariant = (variantId: number) => {
+    setSelectedVariants(prev => {
+      if (prev.includes(variantId)) {
+        // Remove variant and its quantity
+        const newVariants = prev.filter(id => id !== variantId);
+        const newQuantities = { ...variantQuantities };
+        delete newQuantities[variantId];
+        setVariantQuantities(newQuantities);
+        return newVariants;
+      } else {
+        // Add variant with default quantity of 1
+        setVariantQuantities(prev => ({ ...prev, [variantId]: 1 }));
+        return [...prev, variantId];
+      }
+    });
   };
 
-  const getCurrentSize = () => {
-    const variant = getCurrentVariant();
-    if (!variant || !selectedOption) return "";
-    
-    return variant[selectedOption as keyof typeof variant] as string;
+  const handleVariantQuantityChange = (variantId: number, change: number) => {
+    const currentQty = variantQuantities[variantId] || 1;
+    const newQty = currentQty + change;
+    if (newQty >= 1 && newQty <= 10) {
+      setVariantQuantities(prev => ({ ...prev, [variantId]: newQty }));
+    }
   };
 
   const handleAddToCart = () => {
-    if (!product || !selectedVariant || !selectedOption) {
-      toast.error("Please select a variant and size");
+    if (!product || selectedVariants.length === 0) {
+      toast.error("Please select at least one variant");
       return;
     }
 
     try {
-      const variant = getCurrentVariant();
-      const size = getCurrentSize();
-      
-      // Add the product to cart with variant information
-      addToCart({
-        ...product,
-        selectedVariantId: selectedVariant,
-        selectedSize: size,
-        price: getCurrentPrice()
-      }, quantity);
-      
+      selectedVariants.forEach(variantId => {
+        const variant = product.variants?.find(v => v.id === variantId);
+        if (variant) {
+          addToCart({
+            ...product,
+            selectedVariantId: variantId,
+          }, variantQuantities[variantId] || 1);
+        }
+      });
       toast.success("Added to cart!");
     } catch (error) {
       toast.error("Failed to add to cart");
     }
   };
 
-  const toggleWishlist = () => {
-    if (!product) return;
-
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-      toast.success("Removed from wishlist");
-    } else {
-      addToWishlist(product);
-      toast.success("Added to wishlist");
-    }
-  };
-
-  const handleShare = async () => {
-    try {
-      await navigator.share({
-        title: product?.name,
-        text: `Check out ${product?.name} on Pokar Greens!`,
-        url: window.location.href,
-      });
-    } catch (error) {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Link copied to clipboard");
-      } catch (clipboardError) {
-        toast.error("Sharing failed");
-      }
-    }
-  };
-
-  if (!product) {
-    return (
-      <div className="container mx-auto px-4 py-24">
-        <div className="animate-pulse">
-          <div className="h-96 bg-gray-200 rounded-lg mb-4"></div>
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <Header />
-      <div className="container mx-auto px-4 py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="relative">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-[500px] object-cover rounded-lg"
-            />
-            {product.organic && (
-              <span className="absolute top-4 left-4 bg-harvest-accent text-white text-xs font-bold px-2 py-1 rounded-md">
-                Organic
-              </span>
-            )}
-            {product.seasonal && (
-              <span className="absolute top-4 left-20 bg-harvest-orange-500 text-white text-xs font-bold px-2 py-1 rounded-md">
-                Seasonal
-              </span>
-            )}
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
+        {/* Breadcrumb */}
+        <nav className="mb-8">
+          <ol className="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="/" className="hover:text-harvest-green-600">Home</a></li>
+            <li>/</li>
+            <li><a href="/products" className="hover:text-harvest-green-600">Products</a></li>
+            <li>/</li>
+            <li className="text-gray-900 font-medium">{product?.name}</li>
+          </ol>
+        </nav>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {/* Product Image Section */}
+          <div className="space-y-4">
+            <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100">
+              <img
+                src={product?.media?.url || "/placeholder.jpg"}
+                alt={product?.name || "Product Image"}
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              />
+              {product?.category?.name && (
+                <span className="absolute top-4 left-4 bg-harvest-green-500 text-white text-sm font-medium px-4 py-1.5 rounded-full shadow-md">
+                  {product.category.name}
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="space-y-6">
-            <h1 className="text-3xl font-bold">{product.name}</h1>
-            <p className="text-lg text-gray-500">{product.details}</p>
-            
-            {/* Price display */}
-            {/* <div className="text-2xl font-bold text-harvest-green-500">
-              ${getCurrentPrice().toFixed(2)}
-            </div> */}
-            
-            {/* Variant Selection (Package) */}
-            {/* {product.variants && product.variants.length > 0 && (
-              <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Select Package</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {/* Product Details Section */}
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h1 className="text-4xl font-bold text-gray-900">{product?.name}</h1>
+              <p className="text-lg text-gray-600 leading-relaxed">{product?.description}</p>
+              
+              {/* Product Badges */}
+              <div className="flex flex-wrap gap-3 pt-2">
+                {product?.organic && (
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    Organic
+                  </span>
+                )}
+                {product?.seasonal && (
+                  <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
+                    Seasonal
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Variants Section */}
+            {product?.variants && product.variants.length > 0 && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-gray-900">Available Packages</h2>
+                  <span className="text-sm text-gray-500">Select size & quantity</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {product.variants.map((variant) => (
-                    <button
+                    <div
                       key={variant.id}
-                      onClick={() => setSelectedVariant(variant.id)}
-                      className={`px-4 py-2 border rounded-lg transition ${
-                        selectedVariant === variant.id 
-                          ? 'border-harvest-green-500 bg-harvest-green-50 text-harvest-green-700' 
-                          : 'border-gray-300 hover:border-gray-400'
+                      className={`p-4 rounded-xl border-2 transition-all hover:shadow-md ${
+                        selectedVariants.includes(variant.id)
+                          ? "border-harvest-green-500 bg-harvest-green-50"
+                          : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
-                      Package {variant.id}
-                    </button>
+                      <div className="flex justify-between items-center mb-3">
+                        <div>
+                          <h3 className="font-medium text-gray-900">
+                            {variant.weight} {variant.unit}
+                          </h3>
+                        </div>
+                        <Button
+                          onClick={() => toggleVariant(variant.id)}
+                          variant={selectedVariants.includes(variant.id) ? "default" : "outline"}
+                          size="sm"
+                          className={selectedVariants.includes(variant.id) ? "bg-harvest-green-500 hover:bg-harvest-green-600" : ""}
+                        >
+                          {selectedVariants.includes(variant.id) ? "Selected" : "Select"}
+                        </Button>
+                      </div>
+
+                      {selectedVariants.includes(variant.id) && (
+                        <div className="flex items-center justify-between mt-3 bg-white p-2 rounded-lg border border-gray-100">
+                          <button
+                            onClick={() => handleVariantQuantityChange(variant.id, -1)}
+                            className="p-1.5 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50"
+                            disabled={variantQuantities[variant.id] <= 1}
+                          >
+                            <Minus className="h-4 w-4" />
+                          </button>
+                          <span className="font-medium text-gray-900">{variantQuantities[variant.id] || 1}</span>
+                          <button
+                            onClick={() => handleVariantQuantityChange(variant.id, 1)}
+                            className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
-            )} */}
-            
-            {/* Size options */}
-            {product.variants && selectedVariant && (
-              <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Select Variant</h2>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={() => setSelectedOption("variant1")}
-                    className={`px-4 py-2 border rounded-lg transition ${
-                      selectedOption === "variant1" 
-                        ? 'border-harvest-green-500 bg-harvest-green-50 text-harvest-green-700' 
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                  >
-                    {getCurrentVariant()?.variant1}
-                  </button>
-                  <button
-                    onClick={() => setSelectedOption("variant2")}
-                    className={`px-4 py-2 border rounded-lg transition ${
-                      selectedOption === "variant2" 
-                        ? 'border-harvest-green-500 bg-harvest-green-50 text-harvest-green-700' 
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                  >
-                    {getCurrentVariant()?.variant2}
-                  </button>
-                  <button
-                    onClick={() => setSelectedOption("variant3")}
-                    className={`px-4 py-2 border rounded-lg transition ${
-                      selectedOption === "variant3" 
-                        ? 'border-harvest-green-500 bg-harvest-green-50 text-harvest-green-700' 
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                  >
-                    {getCurrentVariant()?.variant3}
-                  </button>
-                </div>
-              </div>
             )}
-            
-            {/* Selected size display */}
-            {selectedVariant && selectedOption && (
-              <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <p className="text-sm text-gray-600">Selected size: <span className="font-semibold">{getCurrentSize()}</span></p>
-              </div>
-            )}
-            
-            <div className="flex items-center gap-4">
-              <div className="flex items-center border rounded-full">
-                <button
-                  onClick={() => handleQuantityChange(-1)}
-                  className="p-2 hover:text-harvest-green-500"
-                  disabled={quantity <= 1}
-                >
-                  <Minus className="h-4 w-4" />
-                </button>
-                <span className="px-4 font-semibold">{quantity}</span>
-                <button
-                  onClick={() => handleQuantityChange(1)}
-                  className="p-2 hover:text-harvest-green-500"
-                >
-                  <Plus className="h-4 w-4" />
-                </button>
-              </div>
 
+            {/* Add to Cart Button */}
+            <div className="pt-6">
               <Button
-                onClick={toggleWishlist}
-                variant="outline"
-                size="icon"
-                className={`rounded-full ${isInWishlist(product.id) ? 'text-red-500' : ''}`}
+                onClick={handleAddToCart}
+                className="w-full py-6 text-lg bg-harvest-green-500 hover:bg-harvest-green-600 text-white rounded-xl transition-transform active:scale-[0.98]"
+                disabled={selectedVariants.length === 0}
               >
-                <Heart className="h-4 w-4" fill={isInWishlist(product.id) ? "currentColor" : "none"} />
-              </Button>
-              
-              <Button
-                onClick={handleShare}
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-              >
-                <Share className="h-4 w-4" />
+                {selectedVariants.length === 0 ? "Select a package to continue" : "Add to Cart"}
               </Button>
             </div>
 
-            <Button
-              onClick={handleAddToCart}
-              className="w-full bg-harvest-green-500 hover:bg-harvest-green-600 text-white"
-              disabled={!selectedVariant || !selectedOption}
-            >
-              Add to Cart 
-              {/* ${getCurrentPrice().toFixed(2)} */}
-            </Button>
-
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">About this product</h2>
-              <p className="text-gray-600">
-                {product.description ||
-                  "Fresh from local farms to your table. Handpicked for quality and taste."}
-              </p>
+            {/* Product Details */}
+            <div className="border-t pt-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">About this product</h2>
+              <div className="prose prose-green max-w-none">
+                <p className="text-gray-600 leading-relaxed">
+                  {product?.description || "Fresh from local farms to your table. Handpicked for quality and taste."}
+                </p>
+              </div>
             </div>
           </div>
         </div>

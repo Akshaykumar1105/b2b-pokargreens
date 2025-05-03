@@ -83,13 +83,6 @@ const Hero = () => {
             />
           </div>
 
-          <div className="absolute top-4 -right-0 md:right-4 bg-white rounded-lg shadow-lg p-4 z-20 transform rotate-3 hover:rotate-0 transition-transform">
-            <div className="text-harvest-green-500 font-semibold">
-              Today's Special
-            </div>
-            <div className="text-lg font-bold">20% OFF</div>
-            <div className="text-sm text-gray-500">On all seasonal fruits</div>
-          </div>
         </div>
       </div>
 

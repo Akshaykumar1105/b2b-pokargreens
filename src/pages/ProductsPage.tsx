@@ -1,144 +1,119 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProducts } from "@/services/products";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/context/CartContext";
-import { useWishlist } from "@/context/WishlistContext";
-import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import type { Product } from "@/types/product";
 import Header from "@/components/Header";
+import { useState } from "react";
 
 const ProductsPage = () => {
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
-    queryFn: () => getProducts({}),
+    queryFn: async () => {
+      const response = await fetch("https://businessapi.pokargreens.com/api/v1/products");
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
+      const data = await response.json();
+      return data.data; // Ensure we return the 'data' array from the response
+    },
   });
 
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, number[]>>({});
+
+  const handleVariantSelect = (productId: string, variantId: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    setSelectedVariants((prev) => {
+      const currentVariants = prev[productId] || [];
+      const isSelected = currentVariants.includes(variantId);
+      return {
+        ...prev,
+        [productId]: isSelected
+          ? currentVariants.filter((id) => id !== variantId) // Remove variant if already selected
+          : [...currentVariants, variantId], // Add variant if not selected
+      };
+    });
+  };
 
   const handleQuickAdd = (product: Product, e: React.MouseEvent) => {
     e.preventDefault();
-    addToCart(product, 1);
-    toast.success(`${product.name} added to cart!`);
-  };
+    const selectedVariantIds = selectedVariants[product.id];
+    if (selectedVariantIds.length === 0) {
+      toast.error("Please select at least one variant!");
+      return;
+    }
 
-  const handleWishlist = (product: Product, e: React.MouseEvent) => {
-    e.preventDefault();
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-      toast.success(`${product.name} removed from wishlist`);
-    } else {
-      addToWishlist(product);
-      toast.success(`${product.name} added to wishlist`);
+    const selectedVariantsData = product.variants?.filter((variant) =>
+      selectedVariantIds.includes(variant.id)
+    );
+
+    if (selectedVariantsData?.length) {
+      selectedVariantsData.forEach((variant) => {
+        addToCart({
+          ...product,
+          selectedVariant: variant,
+        }, 1);
+        toast.success(`${product.name} (${variant.weight} ${variant.unit}) added to cart!`);
+      });
     }
   };
 
-  if (isLoading) {
-    return (
-      <>
-        <Header></Header>
-        <div className="container mx-auto px-4 py-24">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="animate-pulse">
-                <div className="h-48 bg-gray-200 rounded-t-lg" />
-                <div className="p-4">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
-      <Header></Header>
+      <Header />
       <div className="min-h-screen pt-24">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold mb-8">All Products</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
-              <Link
+              <div
                 key={product.id}
-                to={`/product/${product.id}`}
-                className="group bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col h-full"
               >
-                <div className="relative overflow-hidden h-48">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    {product.organic && (
-                      <span className="bg-harvest-accent text-white text-xs font-bold px-2 py-1 rounded-md">
-                        Organic
-                      </span>
-                    )}
-                    {product.seasonal && (
-                      <span className="bg-harvest-orange-500 text-white text-xs font-bold px-2 py-1 rounded-md">
-                        Seasonal
-                      </span>
-                    )}
+                <Link to={`/product/${product.id}`} className="flex flex-col h-full">
+                  <div className="relative overflow-hidden h-56">
+                    <img
+                      src={product.media?.url ?? "/default-image.jpg"}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
                   </div>
-                  <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end">
-                    <div className="w-full p-3 flex gap-2">
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="font-semibold text-lg">{product.name}</h3>
+                    {product.description && (
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{product.description}</p>
+                    )}
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {product.variants?.map((variant) => (
+                        <button
+                          key={variant.id}
+                          onClick={(e) => handleVariantSelect(product.id, variant.id, e)}
+                          className={`bg-gray-100 text-sm text-center py-1 px-3 rounded-lg shadow-sm transition-colors ${
+                            selectedVariants[product.id]?.includes(variant.id)
+                              ? "bg-harvest-green-500 text-white"
+                              : "hover:bg-gray-200"
+                          }`}
+                        >
+                          {variant.weight} {variant.unit}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-auto pt-4">
                       <Button
-                        className="flex-1 bg-white text-harvest-green-500 hover:bg-harvest-green-500 hover:text-white transition-colors border border-harvest-green-500 font-semibold"
                         onClick={(e) => handleQuickAdd(product, e)}
+                        className="bg-harvest-green-500 text-white hover:bg-harvest-green-600 w-full"
                       >
-                        Quick Add
+                        Add to cart
                       </Button>
-                      {/* <Button
-                        variant="outline"
-                        size="icon"
-                        className={`rounded-full bg-white ${
-                          isInWishlist(product.id)
-                            ? "text-red-500"
-                            : "text-gray-500"
-                        }`}
-                        onClick={(e) => handleWishlist(product, e)}
-                      >
-                        <Heart
-                          className="h-4 w-4"
-                          fill={
-                            isInWishlist(product.id) ? "currentColor" : "none"
-                          }
-                        />
-                      </Button> */}
                     </div>
                   </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg">{product.name}</h3>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-baseline">
-                      {product.discountPrice ? (
-                        <>
-                          <span className="font-bold text-lg text-harvest-green-500">
-                            ${product.discountPrice.toFixed(2)}
-                          </span>
-                          <span className="text-sm text-gray-500 line-through ml-2">
-                            ${product.price.toFixed(2)}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="font-bold text-lg text-harvest-green-500">
-                          ${product.price.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         </div>
