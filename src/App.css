@@ -1,0 +1,36 @@
+.main_logo_img {
+  width: 56px;
+  height: auto;
+}
+
+.custom-height {
+  height: calc(100% - 64px);
+  overflow-y: auto;
+}
+.custom-padding{
+  padding-top: 84px;
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}

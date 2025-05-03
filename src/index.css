@@ -1,0 +1,135 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@import url(./App.css);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 84 32% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 84 32% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 84 32% 10%;
+
+    --primary: 122 39% 49%;
+    --primary-foreground: 120 5% 98%;
+
+    --secondary: 120 33% 96%;
+    --secondary-foreground: 84 32% 10%;
+
+    --muted: 120 8% 95%;
+    --muted-foreground: 84 15% 35%;
+
+    --accent: 88 60% 53%;
+    --accent-foreground: 84 32% 10%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 120 5% 98%;
+
+    --border: 120 6% 90%;
+    --input: 120 6% 90%;
+    --ring: 122 39% 49%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 84 32% 10%;
+    --foreground: 120 5% 98%;
+
+    --card: 84 32% 8%;
+    --card-foreground: 120 5% 98%;
+
+    --popover: 84 32% 8%;
+    --popover-foreground: 120 5% 98%;
+
+    --primary: 122 39% 49%;
+    --primary-foreground: 120 5% 98%;
+
+    --secondary: 84 24% 20%;
+    --secondary-foreground: 120 5% 98%;
+
+    --muted: 84 24% 20%;
+    --muted-foreground: 120 5% 70%;
+
+    --accent: 88 60% 43%;
+    --accent-foreground: 120 5% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 120 5% 98%;
+
+    --border: 84 24% 25%;
+    --input: 84 24% 25%;
+    --ring: 122 39% 49%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+@layer components {
+  .product-card {
+    @apply relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-lg;
+  }
+  
+  .product-card:hover .product-image {
+    @apply scale-105;
+  }
+  
+  .product-image {
+    @apply h-48 w-full object-cover object-center transition-transform duration-300;
+  }
+
+  .category-card {
+    @apply relative overflow-hidden rounded-lg transition-all duration-300 hover:-translate-y-1;
+  }
+  
+  .category-card:hover .category-image {
+    @apply scale-105;
+  }
+  
+  .category-image {
+    @apply h-36 w-full object-cover object-center transition-transform duration-300;
+  }
+
+  .nav-link {
+    @apply relative px-2 py-1 text-base font-medium transition-colors;
+  }
+  
+  .nav-link::after {
+    @apply absolute bottom-0 left-0 h-0.5 w-0 bg-harvest-green-500 transition-all duration-300 content-[''];
+  }
+  
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+  
+  .btn-primary {
+    @apply bg-harvest-green-500 hover:bg-harvest-green-600 text-white font-semibold py-2 px-6 rounded-full transition-all shadow-sm hover:shadow;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-harvest-green-500 border border-harvest-green-500 font-semibold py-2 px-6 rounded-full transition-all;
+  }
+
+  .filter-active {
+    @apply bg-harvest-green-500 text-white;
+  }
+}
