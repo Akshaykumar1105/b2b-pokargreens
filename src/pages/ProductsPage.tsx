@@ -42,7 +42,7 @@ const ProductsPage = () => {
 
   const handleQuickAdd = (product: Product, e: React.MouseEvent) => {
     e.preventDefault();
-    const selectedVariantIds = selectedVariants[product.id];
+    const selectedVariantIds = selectedVariants[product.id] || [];
     if (selectedVariantIds.length === 0) {
       toast.error("Please select at least one variant!");
       return;
@@ -54,10 +54,7 @@ const ProductsPage = () => {
 
     if (selectedVariantsData?.length) {
       selectedVariantsData.forEach((variant) => {
-        addToCart({
-          ...product,
-          selectedVariant: variant,
-        }, 1);
+        addToCart(product, variant, 1);
         toast.success(`${product.name} (${variant.weight} ${variant.unit}) added to cart!`);
       });
     }

@@ -81,18 +81,30 @@ const LoginForm: React.FC<LoginFormProps> = ({
     try {
       const response = await fetch("https://businessapi.pokargreens.com/api/v1/login", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
         }),
       });
 
-      const data = await response.json();
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        throw new Error("Unexpected response format");
+      }
 
       if (!response.ok) {
         setErrors({ auth: data?.message || "Login failed" });
       } else {
-        login(data); // Save auth data in context
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        login(data.user);
 
         if (formData.rememberMe) {
           localStorage.setItem("rememberedUser", formData.email);
@@ -136,76 +148,74 @@ const LoginForm: React.FC<LoginFormProps> = ({
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="login-email">Email Address</Label>
+          <Label htmlFor="email">Email Address</Label>
           <Input
+            id="email"
             type="email"
-            id="login-email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={errors.email ? "border-red-500" : ""}
-            placeholder="your@email.com"
+            autoComplete="email"
+            required
           />
-          {errors.email && (
-            <p className="text-sm text-red-600">{errors.email}</p>
-          )}
+          {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
         </div>
 
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label htmlFor="login-password">Password</Label>
-            <button
-              type="button"
-              onClick={onSwitchToForgotPassword}
-              className="text-sm text-green-600 hover:text-green-500 focus:outline-none"
-            >
-              Forgot password?
-            </button>
-          </div>
+          <Label htmlFor="password">Password</Label>
           <Input
+            id="password"
             type="password"
-            id="login-password"
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className={errors.password ? "border-red-500" : ""}
-            placeholder="••••••••"
+            autoComplete="current-password"
+            required
           />
           {errors.password && (
             <p className="text-sm text-red-600">{errors.password}</p>
           )}
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="rememberMe"
-            checked={formData.rememberMe}
-            onCheckedChange={handleCheckboxChange}
-          />
-          <Label htmlFor="rememberMe" className="text-sm font-normal">
-            Remember me
-          </Label>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Checkbox
+              checked={formData.rememberMe}
+              onCheckedChange={handleCheckboxChange}
+            />
+            <Label htmlFor="rememberMe" className="ml-2">
+              Remember Me
+            </Label>
+          </div>
+          <button
+            type="button"
+            onClick={onSwitchToForgotPassword}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Forgot password?
+          </button>
         </div>
 
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-green-600 hover:bg-green-700"
-        >
-          {isLoading ? "Signing In..." : "Sign In"}
-        </Button>
+        <div className="space-y-4 w-full">
+          <Button
+            type="submit"
+            variant="secondary"
+            disabled={isLoading}
+          >
+            {isLoading ? "Logging in..." : "Sign In"}
+          </Button>
+          <div className="text-sm text-center">
+            Don't have an account?{" "}
+            <button
+              type="button"
+              onClick={onSwitchToSignup}
+              className="text-blue-600 hover:underline"
+            >
+              Sign Up
+            </button>
+          </div>
+        </div>
       </form>
-
-      <p className="mt-6 text-center text-sm text-gray-600">
-        Don't have an account?{" "}
-        <button
-          type="button"
-          onClick={onSwitchToSignup}
-          className="font-medium text-green-600 hover:text-green-500 focus:outline-none"
-        >
-          Create account
-        </button>
-      </p>
     </div>
   );
 };

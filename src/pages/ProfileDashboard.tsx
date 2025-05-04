@@ -58,220 +58,75 @@ const ProfileDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
-      {/* Header with background image */}
-      <div 
-        className="w-full h-48 bg-cover bg-center mb-8"
-        style={{ 
-          backgroundImage: 'url(/assets/imgs/food-banner.jpg)', 
-          backgroundPosition: 'center bottom' 
-        }}
-      >
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-white pt-16">Profile Dashboard</h1>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-white pt-24 pb-12">
       <div className="container mx-auto px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Hello</h1>
+          <p className="text-gray-600 mt-2">
+            Welcome to your account. You can find your past orders, track them & manage your profile.
+          </p>
+        </div>
+
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar */}
+          {/* Simplified Sidebar */}
           <div className="w-full md:w-64 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white border rounded-lg overflow-hidden">
               <div className="flex flex-col">
-                {/* Edit Profile */}
                 <button 
                   onClick={() => setActiveSection('edit')}
-                  className={`flex items-center p-4 text-left group ${
-                    activeSection === 'edit' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className="flex items-center p-4 text-left hover:bg-gray-50 border-b"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 mr-3" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
-                    />
+                  <svg className="h-5 w-5 mr-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  Edit Profile
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-5 w-5 ml-auto" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M9 5l7 7-7 7" 
-                    />
-                  </svg>
+                  My Profile
                 </button>
 
-                {/* Reset Password */}
-                <button 
-                  onClick={() => setActiveSection('password')}
-                  className={`flex items-center p-4 text-left group ${
-                    activeSection === 'password' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 mr-3" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" 
-                    />
-                  </svg>
-                  Reset Password
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-5 w-5 ml-auto" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M9 5l7 7-7 7" 
-                    />
-                  </svg>
-                </button>
-
-                {/* All Orders */}
                 <button 
                   onClick={() => setActiveSection('orders')}
-                  className={`flex items-center p-4 text-left group ${
-                    activeSection === 'orders' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className="flex items-center p-4 text-left hover:bg-gray-50 border-b"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 mr-3" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" 
-                    />
+                  <svg className="h-5 w-5 mr-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  All Orders
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-5 w-5 ml-auto" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M9 5l7 7-7 7" 
-                    />
-                  </svg>
+                  My Orders
                 </button>
 
-                {/* Logout */}
                 <button 
-                  onClick={handleLogout}
-                  className={`flex items-center p-4 text-left group ${
-                    activeSection === 'logout' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-50'
-                  }`}
+                  onClick={() => setActiveSection('addresses')}
+                  className="flex items-center p-4 text-left hover:bg-gray-50 border-b"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 mr-3" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
-                    />
+                  <svg className="h-5 w-5 mr-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  Logout
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-5 w-5 ml-auto" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M9 5l7 7-7 7" 
-                    />
-                  </svg>
+                  My Addresses
                 </button>
 
-                {/* Delete Account */}
                 <button 
                   onClick={handleDeleteAccount}
-                  className={`flex items-center p-4 text-left group ${
-                    activeSection === 'account' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className="flex items-center p-4 text-left hover:bg-gray-50 border-b text-red-600"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 mr-3" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
-                    />
+                  <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
-                  Delete Account
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-5 w-5 ml-auto" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M9 5l7 7-7 7" 
-                    />
+                  Delete account
+                </button>
+
+                <button 
+                  onClick={handleLogout}
+                  className="flex items-center p-4 text-left hover:bg-gray-50"
+                >
+                  <svg className="h-5 w-5 mr-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
+                  Logout
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Main Content */}
+          {/* Main Content Area */}
           <div className="flex-1">
             <div className="bg-white rounded-lg shadow p-6">
               {activeSection === 'edit' && (

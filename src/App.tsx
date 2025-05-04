@@ -15,6 +15,8 @@ import Dashboard from "./pages/dashboard";
 import Profile from "./pages/Profile";
 import CartDrawer from "./components/CartDrawer";
 import Checkout from "./pages/Checkout";
+import MyOrders from "./pages/MyOrders";
+import ProfilePage from "./pages/ProfilePage";
 
 const queryClient = new QueryClient();
 
@@ -33,13 +35,15 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
               <Route
                 path="/cart"
-                element={<CartDrawer isOpen={true} onClose={() => {}} />}
+                element={<CartDrawer isOpen={true} onClose={() => { }} />}
               />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+            
+                <Route path="my-profile"  element={<ProfilePage />} />
+                <Route path="my-orders" element={<MyOrders />} />
             </Routes>
           </BrowserRouter>
         </WishlistProvider>

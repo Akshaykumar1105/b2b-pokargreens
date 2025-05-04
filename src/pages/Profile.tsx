@@ -3,26 +3,34 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import Header from "@/components/Header";
-import { useAuth } from "./AuthContext";
 
 const Profile = () => {
-  const { isLoggedIn, currentUser, logout } = useAuth();
   const navigate = useNavigate();
-  
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
-    name: currentUser?.name || "",
-    email: currentUser?.email || "",
+    name: "",
+    email: "",
   });
 
-  // Protect this route
+  // Check authentication on mount
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/');
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/"); // redirect to home if not logged in
+    } else {
+      setIsLoggedIn(true);
+      // Optionally load user data from localStorage
+      const storedUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+      setFormData({
+        name: storedUser.name || "",
+        email: storedUser.email || "",
+      });
     }
-  }, [isLoggedIn, navigate]);
+  }, [navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,22 +42,26 @@ const Profile = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you'd update the user profile in the database/API
+    // Save updated user info in localStorage (or API call in real app)
+    localStorage.setItem("currentUser", JSON.stringify(formData));
     toast.success("Profile updated successfully!");
   };
 
   const handleDeleteAccount = () => {
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      // In a real app, you'd delete the user account from the database/API
-      logout();
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("currentUser");
       toast.success("Your account has been deleted successfully");
-      navigate('/');
+      navigate("/");
     }
   };
 
-  if (!isLoggedIn || !currentUser) {
-    return null; // Don't render anything while redirecting
-  }
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+    toast.success("Logged out successfully");
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,7 +69,7 @@ const Profile = () => {
       <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold mb-8 mt-8 text-gray-800">Profile Settings</h1>
-          
+
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -76,7 +88,7 @@ const Profile = () => {
                       placeholder="Your name"
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
                     <Input
@@ -89,14 +101,14 @@ const Profile = () => {
                     />
                     <p className="text-xs text-gray-500">Email address cannot be changed</p>
                   </div>
-                  
+
                   <Button type="submit" className="bg-green-600 hover:bg-green-700">
                     Save Changes
                   </Button>
                 </form>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Security</CardTitle>
@@ -106,9 +118,12 @@ const Profile = () => {
                 <Button variant="outline" className="w-full" onClick={() => navigate('/change-password')}>
                   Change Password
                 </Button>
+                <Button variant="outline" className="w-full" onClick={handleLogout}>
+                  Log Out
+                </Button>
               </CardContent>
             </Card>
-            
+
             <Card className="border-red-200">
               <CardHeader>
                 <CardTitle className="text-red-600">Danger Zone</CardTitle>
@@ -118,10 +133,7 @@ const Profile = () => {
                 <p className="text-sm text-gray-500 mb-4">
                   Once you delete your account, there is no going back. Please be certain.
                 </p>
-                <Button 
-                  variant="destructive" 
-                  onClick={handleDeleteAccount}
-                >
+                <Button variant="destructive" onClick={handleDeleteAccount}>
                   Delete Account
                 </Button>
               </CardContent>

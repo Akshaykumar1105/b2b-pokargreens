@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaBoxOpen } from "react-icons/fa";
+import { User, Settings, LogOut } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import CartIndicator from "./CartIndicator";
-import WishlistIndicator from "./WishlistIndicator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DropdownMenu,
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Settings, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import AuthModal from "@/pages/AuthModal";
 import { useAuth } from "@/pages/AuthContext";
@@ -34,8 +34,10 @@ const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authType, setAuthType] = useState<"login" | "signup">("login");
   const isMobile = useIsMobile();
-
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Check if auth token exists in localStorage
+  const isAuthenticated = localStorage.getItem("authToken") ? true : false;
 
   const handleCartOpen = () => setIsCartOpen(true);
   const handleCartClose = () => setIsCartOpen(false);
@@ -75,6 +77,7 @@ const Header = () => {
   const handleLogout = () => {
     logout();
     toast.success("You have been logged out successfully");
+    localStorage.removeItem("authToken");  // Remove the token from localStorage
     navigate("/");
   };
 
@@ -98,44 +101,26 @@ const Header = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"}`}
       >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             <Link to="/" className="text-2xl font-bold main_logo_img">
-              <img
-                style={headerStyle}
-                src="/assets/imgs/POKAR-GREENS-Logo.svg"
-                alt="POKAR-GREENS-Logo"
-              />
+              <img style={headerStyle} src="/assets/imgs/POKAR-GREENS-Logo.svg" alt="POKAR-GREENS-Logo" />
             </Link>
 
             {!isMobile && (
               <nav className="hidden md:flex items-center gap-8">
-                <Link
-                  to="/"
-                  className="text-harvest-green-800 hover:text-harvest-green-600 transition-colors"
-                >
+                <Link to="/" className="text-harvest-green-800 hover:text-harvest-green-600 transition-colors">
                   Home
                 </Link>
-                <Link
-                  to="/products"
-                  className="text-harvest-green-800 hover:text-harvest-green-600 transition-colors"
-                >
+                <Link to="/products" className="text-harvest-green-800 hover:text-harvest-green-600 transition-colors">
                   Products
                 </Link>
-                <Link
-                  to="/about"
-                  className="text-harvest-green-800 hover:text-harvest-green-600 transition-colors"
-                >
+                <Link to="/about" className="text-harvest-green-800 hover:text-harvest-green-600 transition-colors">
                   About
                 </Link>
-                <Link
-                  to="/contact"
-                  className="text-harvest-green-800 hover:text-harvest-green-600 transition-colors"
-                >
+                <Link to="/contact" className="text-harvest-green-800 hover:text-harvest-green-600 transition-colors">
                   Contact
                 </Link>
               </nav>
@@ -143,53 +128,40 @@ const Header = () => {
 
             <div className="flex items-center gap-4">
               <div className="hidden md:flex items-center gap-4">
-                {isLoggedIn ? (
+                {isAuthenticated ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="relative h-10 w-10 rounded-full"
-                      >
-                        <Avatar className="h-10 w-10 border-2 border-green-600">
-                          <AvatarFallback className="bg-green-100 text-green-800">
-                            {getInitials()}
-                          </AvatarFallback>
+                      <Button variant="ghost" className="relative flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
+                        <Avatar className="h-8 w-8 bg-green-600 text-white">
+                          <AvatarFallback>{getInitials()}</AvatarFallback>
                         </Avatar>
+                        <span className="text-harvest-green-800">{currentUser?.name || 'User'}</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
-                      <DropdownMenuLabel>
-                        {currentUser?.name || currentUser?.email}
-                      </DropdownMenuLabel>
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={navigateToProfile}>
+                      <DropdownMenuItem onClick={() => navigate('/my-profile')}>
                         <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
+                        Profile
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={navigateToDashboard}>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Dashboard</span>
+                      <DropdownMenuItem onClick={() => navigate('/my-orders')}>
+                        <FaBoxOpen className="mr-2 h-4 w-4" />
+                        My Orders
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout}>
+                      <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                         <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
+                        Logout
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
                   <>
-                    <Button
-                      onClick={openLoginModal}
-                      variant="outline"
-                      className="px-6 py-4 text-base"
-                    >
+                    <Button onClick={openLoginModal} variant="outline" className="px-6 py-4 text-base">
                       Login
                     </Button>
-                    <Button
-                      onClick={openSignupModal}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
+                    <Button onClick={openSignupModal} className="bg-green-600 hover:bg-green-700 text-white">
                       Sign Up
                     </Button>
                   </>
@@ -200,24 +172,9 @@ const Header = () => {
 
               {isMobile && (
                 <>
-                  <button
-                    onClick={toggleMobileMenu}
-                    className="text-harvest-green-800 focus:outline-none"
-                    aria-label="Toggle mobile menu"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 6h16M4 12h16M4 18h16"
-                      />
+                  <button onClick={toggleMobileMenu} className="text-harvest-green-800 focus:outline-none" aria-label="Toggle mobile menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                   </button>
                   <MobileMenu
@@ -225,8 +182,8 @@ const Header = () => {
                     onClose={() => setIsMobileMenuOpen(false)}
                     onSignup={openSignupModal}
                     onLogin={openLoginModal}
-                    isLoggedIn={isLoggedIn}
-                    onProfileClick={navigateToProfile}
+                    isLoggedIn={isAuthenticated}
+                    onLogout={handleLogout}
                   />
                 </>
               )}
@@ -235,11 +192,10 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={closeAuthModal}
-        initialView={authType}
+        authType={authType}
       />
     </>
   );
