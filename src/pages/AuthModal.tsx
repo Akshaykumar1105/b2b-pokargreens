@@ -22,7 +22,7 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalProps) =
   const switchToLogin = () => setActiveView("login");
   const switchToSignup = () => setActiveView("signup");
   const switchToForgotPassword = () => setActiveView("forgot");
-
+console.log(activeView)
   const handleSuccess = () => {
     onClose();
   };

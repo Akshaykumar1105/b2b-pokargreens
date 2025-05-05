@@ -106,7 +106,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Account created successfully!");
+        toast.success(data.message);
+
 
         login({
           id: data.user?.id || undefined,

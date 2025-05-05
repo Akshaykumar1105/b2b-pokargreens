@@ -1,18 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { ShoppingBag } from "lucide-react";
-import { useState } from "react";
-import { useCart } from "@/context/CartContext"; // ✅ Import useCart for clearing cart
+import { ShoppingBag, User, Mail, MapPin, Info } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useCart } from "@/context/CartContext";
 
 const OrderSummary = ({ items }) => {
-  const { clearCart } = useCart(); // ✅ Access clearCart from CartContext
+  const { clearCart } = useCart();
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
   const uniqueProducts = new Set(items.map(item => item.productId)).size;
 
+  const [user, setUser] = useState(null); // ✅ state to hold user data
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // ✅ Fetch user from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userData');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error('Invalid userData JSON:', e);
+      }
+    }
+  }, []);
+
   const handlePlaceOrder = async () => {
-    const userId = 1; // Replace with actual user ID
+    if (!user) {
+      setError('User information not available.');
+      return;
+    }
+
+    const userId = user.id;
     const totalWeight = items.reduce(
       (sum, item) => sum + (item.variant.weight * item.quantity),
       0
@@ -37,11 +55,6 @@ const OrderSummary = ({ items }) => {
 
       const token = localStorage.getItem('authToken');
 
-      const xsrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
-
       const response = await fetch('https://businessapi.pokargreens.com/api/v1/orders', {
         method: 'POST',
         headers: {
@@ -58,7 +71,7 @@ const OrderSummary = ({ items }) => {
       }
 
       alert('Order placed successfully!');
-      clearCart(); // ✅ Clear cart after successful order
+      clearCart();
 
     } catch (error) {
       setError(error.message);
@@ -73,6 +86,26 @@ const OrderSummary = ({ items }) => {
         <ShoppingBag className="w-6 h-6 text-harvest-green-500" />
         <h3 className="text-xl font-semibold">Order Summary</h3>
       </div>
+
+      {/* ✅ User Info */}
+      {user ? (
+        <div className="space-y-2 mb-6 bg-gray-50 p-4 rounded-lg">
+          <div className="flex items-center gap-2 text-gray-700">
+            <User className="w-4 h-4" />
+            <span className="font-medium">{user.name}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <Mail className="w-4 h-4" />
+            <span>{user.email}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <MapPin className="w-4 h-4" />
+            <span>{user.address}</span>
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm text-gray-500 mb-4">Loading user info...</p>
+      )}
 
       <div className="space-y-4 mb-6">
         <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -109,15 +142,21 @@ const OrderSummary = ({ items }) => {
         ))}
       </div>
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
       <Button
         className="w-full bg-harvest-green-500 hover:bg-harvest-green-600 text-white"
         onClick={handlePlaceOrder}
-        disabled={isLoading}
+        disabled={isLoading || !user}
       >
         {isLoading ? 'Placing Order...' : 'Place Order'}
       </Button>
+
+      {/* ✅ Note */}
+      <div className="mt-4 flex items-start gap-2 text-sm text-gray-700 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+        <Info className="w-4 h-4 text-yellow-500 mt-0.5" />
+        <p>Note: This order will be received by tomorrow.</p>
+      </div>
     </div>
   );
 };

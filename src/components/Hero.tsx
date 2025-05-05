@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -17,58 +18,15 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button className="btn-primary text-base px-8 py-6">
-              Shop Now
-            </Button>
-            <Button
-              variant="outline"
-              className="btn-secondary text-base px-8 py-6"
-            >
-              Learn More
-            </Button>
+            <Link to="/products">
+              <Button className="btn-primary text-base px-8 py-6">
+                Shop Now
+              </Button>
+            </Link>
+
           </div>
 
-          <div className="flex items-center mt-12 space-x-6">
-            <div className="flex items-center">
-              <div className="bg-white p-2 rounded-full shadow-md">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-harvest-green-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <span className="ml-3 text-gray-700">100% Organic</span>
-            </div>
-
-            <div className="flex items-center">
-              <div className="bg-white p-2 rounded-full shadow-md">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-harvest-green-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <span className="ml-3 text-gray-700">Same Day Delivery</span>
-            </div>
-          </div>
+    
         </div>
 
         <div className="md:w-1/2 mt-12 md:mt-0 relative animate-scale-in">

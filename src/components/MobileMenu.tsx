@@ -4,18 +4,15 @@ import {
   Home,
   Apple,
   Carrot,
-  CalendarClock,
-  Search,
-  Leaf,
   Phone,
+  LogOut,
+  User,
+  LayoutDashboard,
+  PhoneOutgoing,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-
-const menuStyle = {
-  margin: 0,
-  display: "flex",
-};
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/pages/AuthContext"; // Make sure this is your actual auth context
 
 const headerStyle = {
   width: "74px",
@@ -28,6 +25,8 @@ interface MobileMenuProps {
   onClose: () => void;
   onLogin: () => void;
   onSignup: () => void;
+  onLogout?: () => void;
+  isLoggedIn?: boolean;
 }
 
 const MobileMenu = ({
@@ -35,14 +34,18 @@ const MobileMenu = ({
   onClose,
   onLogin,
   onSignup,
+  onLogout,
+  isLoggedIn,
 }: MobileMenuProps) => {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
-
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -51,53 +54,47 @@ const MobileMenu = ({
   if (!isOpen) return null;
 
   const handleLogin = () => {
-    onClose(); // Close mobile menu first
-    onLogin(); // Then open login modal
+    onClose();
+    onLogin();
   };
 
   const handleSignup = () => {
-    onClose(); // Close mobile menu first
-    onSignup(); // Then open signup modal
+    onClose();
+    onSignup();
+  };
+
+  const handleLogout = () => {
+    onClose();
+    if (onLogout) onLogout();
+  };
+
+  const goToDashboard = () => {
+    onClose();
+    navigate("/dashboard");
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" onClick={onClose}>
       <div
-        className={`fixed top-0 right-0 h-full w-[300px] max-w-full bg-white shadow-lg z-50 p-5 overflow-y-auto transform ${
-          isOpen ? "animate-slide-in-right" : "animate-slide-out-right"
-        }`}
+        className={`fixed top-0 right-0 h-full w-[300px] bg-white shadow-lg z-50 p-5 overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <div className="text-xl font-bold text-harvest-green-500">
-            <img
-              style={headerStyle}
-              src="/assets/imgs/POKAR-GREENS-Logo.svg"
-              alt="POKAR-GREENS-Logo"
-            />
-          </div>
+          <img
+            style={headerStyle}
+            src="/assets/imgs/POKAR-GREENS-Logo.svg"
+            alt="POKAR-GREENS-Logo"
+          />
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X size={24} />
           </Button>
         </div>
 
-        {/* <div className="mb-4 relative">
-          <input 
-            type="text" 
-            placeholder="Search products..." 
-            className="w-full py-2 pl-10 pr-3 rounded-full border border-gray-200 focus:outline-none focus:ring-1 focus:ring-harvest-green-500"
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-        </div> */}
-
         <nav className="space-y-6 mt-4">
           <Link
             to="/"
-            style={menuStyle}
             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors"
+            onClick={onClose}
           >
             <Home className="text-harvest-green-500" size={20} />
             <span className="font-medium">Home</span>
@@ -105,26 +102,26 @@ const MobileMenu = ({
 
           <Link
             to="/products"
-            style={menuStyle}
-            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors"
+            className="flex items-starts space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors"
+            onClick={onClose}
           >
             <Apple className="text-harvest-orange-500" size={20} />
             <span className="font-medium">Products</span>
           </Link>
 
-          <Link
+          {/* <Link
             to="/categories"
-            style={menuStyle}
             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors"
+            onClick={onClose}
           >
             <Carrot className="text-harvest-yellow-500" size={20} />
             <span className="font-medium">Categories</span>
-          </Link>
+          </Link> */}
 
           <Link
             to="/about"
-            style={menuStyle}
             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors"
+            onClick={onClose}
           >
             <Phone className="text-harvest-green-500" size={20} />
             <span className="font-medium">About Us</span>
@@ -132,29 +129,56 @@ const MobileMenu = ({
 
           <Link
             to="/contact"
-            style={menuStyle}
             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors"
+            onClick={onClose}
           >
-            <Phone className="text-harvest-green-500" size={20} />
+            <PhoneOutgoing className="text-harvest-green-500" size={20} />
             <span className="font-medium">Contact Us</span>
           </Link>
+
+          {isLoggedIn && (
+            <>
+              <button
+                onClick={goToDashboard}
+                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors w-full text-left"
+              >
+                <LayoutDashboard className="text-harvest-green-500" size={20} />
+                <span className="font-medium">Dashboard</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-50 transition-colors text-red-600 w-full text-left"
+              >
+                <LogOut size={20} />
+                <span className="font-medium">Logout</span>
+              </button>
+            </>
+          )}
         </nav>
 
-        <div className="mt-10 space-y-3 px-3">
-          <Button
-            onClick={handleLogin}
-            className="w-full bg-white border border-harvest-green-600 text-harvest-green-600 hover:bg-harvest-green-50"
-          >
-            Login
-          </Button>
+        {!isLoggedIn && (
+          <div className="mt-10 space-y-3 px-3">
+            <Button
+              onClick={handleLogin}
+              className="w-full bg-white border border-harvest-green-600 text-harvest-green-600 hover:bg-harvest-green-50"
+            >
+              Login
+            </Button>
 
-          <Button
-            onClick={handleSignup}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
-          >
-            Sign Up
-          </Button>
-        </div>
+            <Button
+              onClick={handleSignup}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+            >
+              Sign Up
+            </Button>
+          </div>
+        )}
+
+        {isLoggedIn && currentUser?.name && (
+          <div className="mt-6 px-3 text-sm text-gray-500">
+            Logged in as <span className="font-semibold">{currentUser.name}</span>
+          </div>
+        )}
       </div>
     </div>
   );

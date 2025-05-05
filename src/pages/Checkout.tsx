@@ -16,17 +16,19 @@ const CheckoutPage = () => {
     }
   };
 
+  const items = cart?.items || [];
+
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50 pt-4 sm:pt-8">
+      <div className="min-h-screen bg-gray-50 pt-4 sm:pt-16">
         <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
             <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-harvest-green-500" />
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Shopping Cart</h1>
           </div>
 
-          {cart.items.length === 0 ? (
+          {items.length === 0 ? (
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-8 sm:p-12 text-center">
               <div className="mb-6">
                 <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto" />
@@ -47,7 +49,7 @@ const CheckoutPage = () => {
                     <div className="flex items-center gap-2">
                       <h2 className="text-lg sm:text-xl font-semibold">Cart Items</h2>
                       <span className="bg-harvest-green-100 text-harvest-green-800 text-xs sm:text-sm px-2 py-1 rounded-full">
-                        {cart.items.length} items
+                        {items.length} items
                       </span>
                     </div>
                     <button
@@ -60,15 +62,15 @@ const CheckoutPage = () => {
                   </div>
 
                   <div className="divide-y space-y-4 sm:space-y-6 md:space-y-8">
-                    {cart.items.map((item) => (
+                    {items.map((item) => (
                       <div
                         key={`${item.productId}-${item.variantId}`}
                         className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 pt-4 sm:pt-6 md:pt-8 first:pt-0 group"
                       >
                         <div className="w-full sm:w-32 h-40 sm:h-32 bg-gray-50 rounded-lg sm:rounded-xl overflow-hidden flex-shrink-0 border transition-transform group-hover:scale-105">
                           <img
-                            src={item.product.media.url}
-                            alt={item.product.name}
+                            src={item.product?.media?.url ?? '/default-image.jpg'}
+                            alt={item.product?.name ?? 'Product'}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -76,13 +78,15 @@ const CheckoutPage = () => {
                           <div className="flex justify-between items-start">
                             <div>
                               <h3 className="font-medium text-xl text-gray-900 leading-tight group-hover:text-harvest-green-600 transition-colors">
-                                {item.product.name}
+                                {item.product?.name}
                               </h3>
-                              <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-700">
-                                <span className="text-sm">
-                                  {item.variant.weight} {item.variant.unit}
-                                </span>
-                              </div>
+                              {item.variant?.weight && item.variant?.unit && (
+                                <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+                                  <span className="text-sm">
+                                    {item.variant.weight} {item.variant.unit}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             <button
                               onClick={() => removeFromCart(item.productId, item.variantId)}
@@ -122,7 +126,7 @@ const CheckoutPage = () => {
                   </div>
                 </div>
               </div>
-              <OrderSummary items={cart.items} />
+              <OrderSummary items={items} />
             </div>
           )}
         </div>

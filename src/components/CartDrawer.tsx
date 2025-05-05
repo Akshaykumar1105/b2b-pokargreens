@@ -23,9 +23,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={onClose}>
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl transform transition-transform duration-300 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl transform transition-transform duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col h-full">
@@ -42,30 +40,30 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
 
           {/* Cart Items */}
           <div className="flex-1 overflow-y-auto p-4">
-            {cart.items.length === 0 ? (
+            {cart?.items?.length === 0 ? (
               <div className="text-center py-8">
                 <ShoppingCart className="mx-auto text-gray-400 mb-4" size={64} />
                 <p className="text-gray-500">Your cart is empty</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {cart.items.map((item) => (
+                {cart?.items?.map((item) => (
                   <div
                     key={`${item.productId}-${item.variantId}`}
                     className="flex gap-4 border-b pb-4"
                   >
                     <div className="w-20 h-20 bg-gray-100 rounded-md overflow-hidden">
                       <img
-                        src={item.product.media?.url ?? '/default-image.jpg'}
-                        alt={item.product.name}
+                        src={item.product?.media?.url ?? '/default-image.jpg'}
+                        alt={item.product?.name ?? 'Product'}
                         className="w-full h-full object-cover"
                       />
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="font-medium text-base">{item.product.name}</h3>
+                      <h3 className="font-medium text-base">{item.product?.name}</h3>
                       <p className="text-sm text-gray-500">
-                        {item.variant.weight} {item.variant.unit}
+                        {item.variant?.weight} {item.variant?.unit}
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
                         Quantity: {item.quantity}
@@ -111,7 +109,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Footer */}
-          {cart.items.length > 0 && (
+          {cart?.items?.length > 0 && (
             <div className="p-4 border-t bg-gray-50">
               <div className="space-y-2">
                 <Button

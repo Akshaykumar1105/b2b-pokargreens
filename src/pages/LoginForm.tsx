@@ -201,6 +201,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             type="submit"
             variant="secondary"
             disabled={isLoading}
+            className="w-full bg-green-600 hover:bg-green-700"
           >
             {isLoading ? "Logging in..." : "Sign In"}
           </Button>

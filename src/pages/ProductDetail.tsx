@@ -32,7 +32,6 @@ interface ExtendedProduct extends Product {
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState<ExtendedProduct | null>(null);
-  const [quantity, setQuantity] = useState(1);
   const [selectedVariants, setSelectedVariants] = useState<number[]>([]);
   const [variantQuantities, setVariantQuantities] = useState<Record<number, number>>({});
   const { addToCart } = useCart();
@@ -41,18 +40,12 @@ const ProductDetail = () => {
     const fetchProduct = async () => {
       if (id) {
         try {
-          // Use the actual API or service to fetch the product
           const response = await fetch(`https://businessapi.pokargreens.com/api/v1/products/${id}`);
           if (!response.ok) {
             throw new Error("Failed to fetch product");
           }
           const fetchedProduct = await response.json();
           setProduct(fetchedProduct);
-
-          // Set default variant when product loads
-          if (fetchedProduct?.variants && fetchedProduct.variants.length > 0) {
-            setSelectedVariant(fetchedProduct.variants[0].id);
-          }
         } catch (error) {
           toast.error("Failed to load product");
         }
@@ -60,18 +53,6 @@ const ProductDetail = () => {
     };
     fetchProduct();
   }, [id]);
-
-  const handleQuantityChange = (change: number) => {
-    const newQuantity = quantity + change;
-    if (newQuantity >= 1 && newQuantity <= 10) {
-      setQuantity(newQuantity);
-    }
-  };
-
-  const getCurrentVariant = () => {
-    if (!product?.variants || !selectedVariant) return null;
-    return product.variants.find((v) => v.id === selectedVariant);
-  };
 
   const toggleVariant = (variantId: number) => {
     setSelectedVariants(prev => {
@@ -108,13 +89,10 @@ const ProductDetail = () => {
       selectedVariants.forEach(variantId => {
         const variant = product.variants?.find(v => v.id === variantId);
         if (variant) {
-          addToCart({
-            ...product,
-            selectedVariantId: variantId,
-          }, variantQuantities[variantId] || 1);
+          addToCart(product, variant, variantQuantities[variantId] || 1);
+          toast.success(`${product.name} (${variant.weight} ${variant.unit}) added to cart!`);
         }
       });
-      toast.success("Added to cart!");
     } catch (error) {
       toast.error("Failed to add to cart");
     }

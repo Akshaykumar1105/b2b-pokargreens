@@ -58,16 +58,17 @@ const Header = () => {
   };
 
   const openLoginModal = () => {
-    setAuthType("login");
+    setAuthType("login"); // Ensure authType is set to "login" here
     setIsAuthModalOpen(true);
     document.body.classList.add("my-custom-class");
   };
 
   const openSignupModal = () => {
-    setAuthType("signup");
+    setAuthType("signup"); // Ensure authType is set to "signup" here
     setIsAuthModalOpen(true);
     document.body.classList.add("my-custom-class");
   };
+
 
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
@@ -195,7 +196,7 @@ const Header = () => {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={closeAuthModal}
-        authType={authType}
+        initialView={authType}
       />
     </>
   );
