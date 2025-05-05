@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, User, Mail, MapPin, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
+import AuthModal from "@/pages/AuthModal";
+
 
 const OrderSummary = ({ items }) => {
   const { clearCart } = useCart();
@@ -11,6 +13,8 @@ const OrderSummary = ({ items }) => {
   const [user, setUser] = useState(null); // ✅ state to hold user data
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [token, setToken] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // ✅ Fetch user from localStorage on mount
   useEffect(() => {
@@ -22,7 +26,18 @@ const OrderSummary = ({ items }) => {
         console.error('Invalid userData JSON:', e);
       }
     }
+    const token = localStorage.getItem('authToken');
+    setToken(token);
+
+    if (!token) {
+      setIsAuthModalOpen(true);
+    }
   }, []);
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+    document.body.classList.remove("my-custom-class");
+  };
 
   const handlePlaceOrder = async () => {
     if (!user) {
@@ -52,9 +67,8 @@ const OrderSummary = ({ items }) => {
     try {
       setIsLoading(true);
       setError(null);
-
-      const token = localStorage.getItem('authToken');
-
+      
+      
       const response = await fetch('https://businessapi.pokargreens.com/api/v1/orders', {
         method: 'POST',
         headers: {
@@ -147,7 +161,7 @@ const OrderSummary = ({ items }) => {
       <Button
         className="w-full bg-harvest-green-500 hover:bg-harvest-green-600 text-white"
         onClick={handlePlaceOrder}
-        disabled={isLoading || !user}
+        disabled={isLoading || !token}
       >
         {isLoading ? 'Placing Order...' : 'Place Order'}
       </Button>
@@ -157,6 +171,12 @@ const OrderSummary = ({ items }) => {
         <Info className="w-4 h-4 text-yellow-500 mt-0.5" />
         <p>Note: This order will be received by tomorrow.</p>
       </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={closeAuthModal}
+        initialView={"login"}
+      />
     </div>
   );
 };

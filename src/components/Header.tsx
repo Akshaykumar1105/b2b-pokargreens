@@ -21,9 +21,9 @@ import { useAuth } from "@/pages/AuthContext";
 import CartDrawer from "./CartDrawer";
 
 const headerStyle = {
-  width: "82px",
-  height: "auto",
+  width: "120px",
   display: "block",
+  maxWidth: "140%",  // Changed from max-width to maxWidth
 };
 
 const Header = () => {
@@ -102,12 +102,12 @@ const Header = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"}`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-2"}`}
       >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             <Link to="/" className="text-2xl font-bold main_logo_img">
-              <img style={headerStyle} src="/assets/imgs/POKAR-GREENS-Logo.svg" alt="POKAR-GREENS-Logo" />
+              <img style={headerStyle}  src="/assets/imgs/POKAR-GREENS-Logo.svg" alt="POKAR-GREENS-Logo" />
             </Link>
 
             {!isMobile && (

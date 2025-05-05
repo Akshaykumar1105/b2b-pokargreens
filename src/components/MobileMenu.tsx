@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/pages/AuthContext"; // Make sure this is your actual auth context
+import {  ShoppingBag } from "lucide-react";
 
 const headerStyle = {
   width: "74px",
@@ -138,13 +139,22 @@ const MobileMenu = ({
 
           {isLoggedIn && (
             <>
-              <button
-                onClick={goToDashboard}
+              <Link
+                to="/my-profile"
                 className="flex items-center space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors w-full text-left"
               >
-                <LayoutDashboard className="text-harvest-green-500" size={20} />
-                <span className="font-medium">Dashboard</span>
-              </button>
+                <User className="text-harvest-green-500" size={20} />
+                <span className="font-medium">My Profile</span>
+              </Link>
+
+              <Link
+                to="/my-orders"
+                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-harvest-green-50 transition-colors w-full text-left"
+              >
+                <ShoppingBag className="text-harvest-green-500" size={20} />
+                <span className="font-medium">My Orders</span>
+              </Link>
+
               <button
                 onClick={handleLogout}
                 className="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-50 transition-colors text-red-600 w-full text-left"
@@ -152,6 +162,7 @@ const MobileMenu = ({
                 <LogOut size={20} />
                 <span className="font-medium">Logout</span>
               </button>
+
             </>
           )}
         </nav>
