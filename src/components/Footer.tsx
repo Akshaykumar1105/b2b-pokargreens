@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer id="contact" className="bg-harvest-dark text-white pt-16 pb-8">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <div className="text-2xl font-display font-bold flex items-center mb-6">
               <span className="text-harvest-orange-500">Pokar</span>
@@ -81,21 +81,13 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="#products"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Shop
-                </a>
+                <Link
+                  to="/products"
+                  className="text-gray-300 hover:text-white transition-colors">Products
+                </Link>
+
               </li>
-              <li>
-                <a
-                  href="#categories"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Categories
-                </a>
-              </li>
+
               <li>
                 <a
                   href="/about"
@@ -116,7 +108,7 @@ const Footer = () => {
 
           <div>
             <h3 className="font-semibold text-xl mb-6">Contact Info</h3>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               <li className="flex items-start">
                 <svg
                   className="h-6 w-6 text-harvest-green-400 mr-3 flex-shrink-0"
@@ -139,9 +131,12 @@ const Footer = () => {
                   />
                 </svg>
                 <span className="text-gray-300">
-                  store 1 : A-504, Shaligram Lakeview Commercial, Nr Vaishnodevi
-                  circle Khoraj, Gandhinagar, Gujarat-382421 store 2 : G39
-                  shaligram suqare, gota, ahmedabad, 382481
+                  Pokar Food Service Private Limited <br />
+                  A-504, Shaligram Lakeview Commercial, <br />
+                  Nr Vaishnodevi circle Khoraj, <br />
+                  Gandhinagar, Gujarat-382421. <br />
+                  Email: pokarfoodserviceprivatelimited@gmail.com
+                  Mobile no: +91 9586901881
                 </span>
               </li>
               <li className="flex items-start">
@@ -178,51 +173,8 @@ const Footer = () => {
                 </svg>
                 <span className="text-gray-300">info@pokargreens.com</span>
               </li>
-              <li className="flex items-start">
-                <svg
-                  className="h-6 w-6 text-harvest-green-400 mr-3 flex-shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <div className="text-gray-300">
-                  <p className="font-semibold">Hours:</p>
-                  <p>Mon - Fri: 8am - 8pm</p>
-                  <p>Sat - Sun: 9am - 6pm</p>
-                </div>
-              </li>
-            </ul>
-          </div>
 
-          <div>
-            <h3 className="font-semibold text-xl mb-6">Download Our App</h3>
-            <p className="text-gray-300 mb-6">
-              Get exclusive app-only deals and shop on the go.
-            </p>
-            <div className="space-y-3">
-              <a href="#" className="block">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Download_on_the_App_Store_Badge.svg/1280px-Download_on_the_App_Store_Badge.svg.png"
-                  alt="Download on App Store"
-                  className="h-10"
-                />
-              </a>
-              <a href="#" className="block">
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/1280px-Google_Play_Store_badge_EN.svg.png"
-                  alt="Get it on Google Play"
-                  className="h-10"
-                />
-              </a>
-            </div>
+            </ul>
           </div>
         </div>
 

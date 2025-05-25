@@ -1,6 +1,7 @@
 // ContactUs.tsx
 import Header from "@/components/Header";
 import React, { useState } from "react";
+import Footer from "@/components/Footer";
 
 const ContactUs: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -132,20 +133,19 @@ const ContactUs: React.FC = () => {
                 <h3 className="text-xl font-semibold text-orange-500 mb-2">
                   Visit Us
                 </h3>
-                <p className="text-gray-600">
-                  store 1 : A-504, Shaligram Lakeview Commercial, Nr Vaishnodevi
-                  circle Khoraj, Gandhinagar, Gujarat-382421
-                </p>
-                <p className="text-gray-600">
-                  store 2 : G39 shaligram suqare, gota, ahmedabad, 382481
-                </p>
+                Pokar Food Service Private Limited <br />
+                A-504, Shaligram Lakeview Commercial, <br />
+                Nr Vaishnodevi circle Khoraj, <br />
+                Gandhinagar, Gujarat-382421. <br />
+                Email: pokarfoodserviceprivatelimited@gmail.com
+                Mobile no: +91 9586901881
               </div>
             </div>
           </div>
         </div>
 
         {/* Contact Form Section */}
-        <div className="bg-amber-50 py-16 px-4 sm:px-6 lg:px-8">
+        {/* <div className="bg-amber-50 py-16 px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="md:flex">
               <div className="md:w-1/3 bg-green-600 text-white p-8">
@@ -289,7 +289,7 @@ const ContactUs: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Map Section */}
         {/* <div className="bg-white py-12 px-4 sm:px-6 lg:px-8">
@@ -309,7 +309,7 @@ const ContactUs: React.FC = () => {
         </div> */}
 
         {/* FAQ Section */}
-        <div className="bg-amber-50 py-12 px-4 sm:px-6 lg:px-8">
+        {/* <div className="bg-amber-50 py-12 px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl">
             <h2 className="text-2xl font-bold text-center text-green-600 mb-8">
               Frequently Asked Questions
@@ -357,7 +357,7 @@ const ContactUs: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Newsletter Section */}
         {/* <div className="bg-green-600 py-12 px-4 sm:px-6 lg:px-8">
@@ -383,6 +383,7 @@ const ContactUs: React.FC = () => {
           </div>
         </div> */}
       </div>
+      <Footer />
     </>
   );
 };

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import type { Product } from "@/types/product";
 import Header from "@/components/Header";
 import { useState } from "react";
+import Footer from "@/components/Footer";
 
 const ProductsPage = () => {
   const { data: products = [], isLoading } = useQuery({
@@ -115,6 +116,7 @@ const ProductsPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

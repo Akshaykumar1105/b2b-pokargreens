@@ -7,6 +7,7 @@ import { useCart } from "@/context/CartContext";
 import { useProduct } from "@/services/products"; // Adjust as needed
 import type { Product } from "@/types/product";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 // Define the variant structure based on your data
 interface Variant {
@@ -101,7 +102,7 @@ const ProductDetail = () => {
   return (
     <>
       <Header />
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="container mx-auto px-0 py-20 my-2 max-w-7xl">
         {/* Breadcrumb */}
         <nav className="mb-8">
           <ol className="flex items-center space-x-2 text-sm text-gray-500">
@@ -231,6 +232,8 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </>
   );
 };
