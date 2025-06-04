@@ -17,6 +17,7 @@ import CartDrawer from "./components/CartDrawer";
 import Checkout from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
 import ProfilePage from "./pages/ProfilePage";
+import TermsCondition from "./pages/TermsConditions"
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="my-profile" element={<ProfilePage />} />
               <Route path="my-orders" element={<MyOrders />} />
+              <Route path="/terms-conditions" element={<TermsCondition />} />
             </Routes>
           </BrowserRouter>
         </WishlistProvider>

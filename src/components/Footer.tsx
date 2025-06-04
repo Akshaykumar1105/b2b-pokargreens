@@ -130,13 +130,11 @@ const Footer = () => {
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <span className="text-gray-300">
+                <span className="text-gray-300 ">
                   Pokar Food Service Private Limited <br />
                   A-504, Shaligram Lakeview Commercial, <br />
                   Nr Vaishnodevi circle Khoraj, <br />
                   Gandhinagar, Gujarat-382421. <br />
-                  Email: pokarfoodserviceprivatelimited@gmail.com
-                  Mobile no: +91 9586901881
                 </span>
               </li>
               <li className="flex items-start">
@@ -171,7 +169,7 @@ const Footer = () => {
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                <span className="text-gray-300">info@pokargreens.com</span>
+                <span className="text-gray-300"> info@pokargreens.com</span>
               </li>
 
             </ul>
@@ -181,21 +179,14 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              &copy; {currentYear} Pokar Greens. All rights reserved.
+              &copy; {currentYear} PokarGreens. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <Link to="#" className="text-gray-400 hover:text-white text-sm">
-                Privacy Policy
+             
+              <Link to="/terms-conditions" className="text-gray-400 hover:text-white text-sm">
+               Terms & Conditions 
               </Link>
-              <Link to="#" className="text-gray-400 hover:text-white text-sm">
-                Terms of Service
-              </Link>
-              <Link to="#" className="text-gray-400 hover:text-white text-sm">
-                Shipping Policy
-              </Link>
-              <Link to="#" className="text-gray-400 hover:text-white text-sm">
-                FAQ
-              </Link>
+          
             </div>
           </div>
         </div>

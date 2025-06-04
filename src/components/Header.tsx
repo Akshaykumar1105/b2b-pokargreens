@@ -23,7 +23,7 @@ import CartDrawer from "./CartDrawer";
 const headerStyle = {
   width: "120px",
   display: "block",
-  maxWidth: "140%",  // Changed from max-width to maxWidth
+  maxWidth: "100%",  // Changed from max-width to maxWidth
 };
 
 const Header = () => {
